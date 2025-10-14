@@ -22,7 +22,8 @@ let participants = [
 
 let isGenerating = false;
 let allFieldsFilled = false;
-let presentationOrder = []
+let presentationOrder = [];
+let groups = [];
 let isRandomized = false;
 let selectedParticipantId = 0;
 let errorMessage = '';
@@ -107,6 +108,7 @@ async function generateRandomOrder(params) {
         });
 
         presentationOrder = finalOrder;
+        groups = shuffleGroups;
         isRandomized = true;
     
     } catch (error) {
@@ -137,6 +139,7 @@ function shuffleArray(array) {
 
 $: completedCount = participants.filter( p => p.keywords.trim() !== '').length;
 
+$: console.log(presentationOrder)
 
 </script>
 
