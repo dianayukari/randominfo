@@ -11,14 +11,27 @@ const port = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data.json');
 
 const defaultData = {
-    participants: Array(15).fill(null).map((_, i) => ({
-        id: i,
-        name: `Participant ${i + 1}`,
-        keywords: ''
-    })),
-    seletedParticipantIds: 0,
+    participants: [
+        { name: 'Arnar', id: 0, keywords: '' },
+        { name: 'Cassandra', id: 1, keywords: '' },
+        { name: 'Costanza', id: 2, keywords: '' },
+        { name: 'Diana', id: 3, keywords: '' },
+        { name: 'Haotong', id: 4, keywords: '' },
+        { name: 'Kosara', id: 5, keywords: '' },
+        { name: 'Li', id: 6, keywords: '' },
+        { name: 'Luca M', id: 7, keywords: '' },
+        { name: 'Luca W', id: 8, keywords: '' },
+        { name: 'Lucas G', id: 9, keywords: '' },
+        { name: 'Martina', id: 10, keywords: '' },
+        { name: 'Matteo', id: 11, keywords: '' },
+        { name: 'Samuel', id: 12, keywords: '' },
+        { name: 'Sergio', id: 13, keywords: '' },
+        { name: 'Zhiyi', id: 14, keywords: '' }
+    ],
+    selectedParticipantId: 0,
     isRandomized: false,
     presentationOrder: [],
+    groups: [],
     lastUpdated: Date.now()
 };
 
@@ -27,16 +40,25 @@ const openai = new OpenAI({
     });
 
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production'
-        ? 'https://dianayukari.github.io/randominfo'
-        : ['http://localhost:5173', 'http://localhost:4173', 'http://127.0.0.1:5173'],
+  origin: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:4173',
+    'http://127.0.0.1:4173',
+    'https://dianayukari.github.io/randominfo'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  credentials: true
 }));
+
+app.options('*', cors());
 
 app.use(express.json({ limit: '1mb' }));
 
 async function loadData() {
     try {
-        const data = await fs.readFile(DATA_FILE, 'utf-8');
+        const data = await fs.promises.readFile(DATA_FILE, 'utf-8');
         return JSON.parse(data);
     } catch (error) {
         console.error('Error loading data:', error);
@@ -73,7 +95,10 @@ app.get('/api/data', async (req, res) => {
 
 app.post('/api/data', async (req, res) => {
     try {
-        const { participants, selectedParticipantId, isRandomized, presentationOrder} = req.body;
+        console.log('📝 Received POST to /api/data');
+        console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
+        
+        const { participants, selectedParticipantId, isRandomized, presentationOrder, groups} = req.body;
         const currentData = await loadData();
 
         const newData = {
@@ -82,10 +107,13 @@ app.post('/api/data', async (req, res) => {
             selectedParticipantId: selectedParticipantId ?? currentData.selectedParticipantId,
             isRandomized: isRandomized ?? currentData.isRandomized,
             presentationOrder: presentationOrder || currentData.presentationOrder,
+            groups: groups || currentData.groups || [],
             lastUpdated: Date.now()
         }
 
+        console.log('📝 Saving new data:', JSON.stringify(newData, null, 2));
         await writeData(newData);
+        console.log('📝 Data saved successfully');
         res.json(newData);
     } catch (error) {
         console.error('Error in /api/data:', error);

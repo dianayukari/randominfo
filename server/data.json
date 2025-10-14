@@ -1,0 +1,241 @@
+{
+  "participants": [
+    {
+      "name": "Arnar",
+      "id": 0,
+      "keywords": "mountain"
+    },
+    {
+      "name": "Cassandra",
+      "id": 1,
+      "keywords": "moutain"
+    },
+    {
+      "name": "Costanza",
+      "id": 2,
+      "keywords": "mountain"
+    },
+    {
+      "name": "Diana",
+      "id": 3,
+      "keywords": "climate"
+    },
+    {
+      "name": "Haotong",
+      "id": 4,
+      "keywords": "infrastructure"
+    },
+    {
+      "name": "Kosara",
+      "id": 5,
+      "keywords": "politics"
+    },
+    {
+      "name": "Li",
+      "id": 6,
+      "keywords": "pain"
+    },
+    {
+      "name": "Luca M",
+      "id": 7,
+      "keywords": "infrastructure"
+    },
+    {
+      "name": "Luca W",
+      "id": 8,
+      "keywords": "radio"
+    },
+    {
+      "name": "Lucas G",
+      "id": 9,
+      "keywords": "geoengineering"
+    },
+    {
+      "name": "Martina",
+      "id": 10,
+      "keywords": "ocean"
+    },
+    {
+      "name": "Matteo",
+      "id": 11,
+      "keywords": "activism"
+    },
+    {
+      "name": "Samuel",
+      "id": 12,
+      "keywords": "passport"
+    },
+    {
+      "name": "Sergio",
+      "id": 13,
+      "keywords": "remote working"
+    },
+    {
+      "name": "Zhiyi",
+      "id": 14,
+      "keywords": "games"
+    }
+  ],
+  "selectedParticipantId": 14,
+  "isRandomized": true,
+  "presentationOrder": [
+    {
+      "name": "Matteo",
+      "keywords": "activism",
+      "theme": "Activism and Politics"
+    },
+    {
+      "name": "Kosara",
+      "keywords": "politics",
+      "theme": "Activism and Politics"
+    },
+    {
+      "name": "Lucas G",
+      "keywords": "geoengineering",
+      "theme": "Activism and Politics"
+    },
+    {
+      "name": "Samuel",
+      "keywords": "passport",
+      "theme": "Activism and Politics"
+    },
+    {
+      "name": "Diana",
+      "keywords": "climate",
+      "theme": "Mountain Research"
+    },
+    {
+      "name": "Costanza",
+      "keywords": "mountain",
+      "theme": "Mountain Research"
+    },
+    {
+      "name": "Cassandra",
+      "keywords": "moutain",
+      "theme": "Mountain Research"
+    },
+    {
+      "name": "Arnar",
+      "keywords": "mountain",
+      "theme": "Mountain Research"
+    },
+    {
+      "name": "Martina",
+      "keywords": "ocean",
+      "theme": "Media and Games"
+    },
+    {
+      "name": "Luca W",
+      "keywords": "radio",
+      "theme": "Media and Games"
+    },
+    {
+      "name": "Zhiyi",
+      "keywords": "games",
+      "theme": "Media and Games"
+    },
+    {
+      "name": "Haotong",
+      "keywords": "infrastructure",
+      "theme": "Infrastructure and Remote Work"
+    },
+    {
+      "name": "Luca M",
+      "keywords": "infrastructure",
+      "theme": "Infrastructure and Remote Work"
+    },
+    {
+      "name": "Li",
+      "keywords": "pain",
+      "theme": "Infrastructure and Remote Work"
+    },
+    {
+      "name": "Sergio",
+      "keywords": "remote working",
+      "theme": "Infrastructure and Remote Work"
+    }
+  ],
+  "groups": [
+    {
+      "theme": "Activism and Politics",
+      "members": [
+        {
+          "name": "Kosara",
+          "keywords": "politics"
+        },
+        {
+          "name": "Matteo",
+          "keywords": "activism"
+        },
+        {
+          "name": "Lucas G",
+          "keywords": "geoengineering"
+        },
+        {
+          "name": "Samuel",
+          "keywords": "passport"
+        }
+      ]
+    },
+    {
+      "theme": "Mountain Research",
+      "members": [
+        {
+          "name": "Arnar",
+          "keywords": "mountain"
+        },
+        {
+          "name": "Cassandra",
+          "keywords": "moutain"
+        },
+        {
+          "name": "Costanza",
+          "keywords": "mountain"
+        },
+        {
+          "name": "Diana",
+          "keywords": "climate"
+        }
+      ]
+    },
+    {
+      "theme": "Media and Games",
+      "members": [
+        {
+          "name": "Luca W",
+          "keywords": "radio"
+        },
+        {
+          "name": "Martina",
+          "keywords": "ocean"
+        },
+        {
+          "name": "Zhiyi",
+          "keywords": "games"
+        }
+      ]
+    },
+    {
+      "theme": "Infrastructure and Remote Work",
+      "members": [
+        {
+          "name": "Haotong",
+          "keywords": "infrastructure"
+        },
+        {
+          "name": "Luca M",
+          "keywords": "infrastructure"
+        },
+        {
+          "name": "Sergio",
+          "keywords": "remote working"
+        },
+        {
+          "name": "Li",
+          "keywords": "pain"
+        }
+      ]
+    }
+  ],
+  "lastUpdated": 1760469202541
+}
