@@ -40,19 +40,10 @@ const openai = new OpenAI({
     });
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:4173',
-    'http://127.0.0.1:4173',
-    'https://dianayukari.github.io/'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  credentials: true
+    origin: process.env.NODE_ENV === 'production'
+        ? 'https://dianayukari.github.io/randominfo'
+        : ['http://localhost:5173', 'http://localhost:4173', 'http://127.0.0.1:5173'],
 }));
-
-app.options('*', cors());
 
 app.use(express.json({ limit: '1mb' }));
 
