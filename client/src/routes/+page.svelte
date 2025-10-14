@@ -35,12 +35,13 @@ const API_BASE_URL = dev
 $: allFieldsFilled = participants.every( p => p.keywords.trim() !== '' );
 
 $: if (browser) {
-    localStorage.setItem('participantsData', JSON.stringify(
+    localStorage.setItem('participantsData', JSON.stringify({
         participants,
         isRandomized,
         presentationOrder,
+        groups,
         selectedParticipantId
-    ));
+    }));
 }
 
 $: selectedParticipant = participants.find( p => p.id === selectedParticipantId ) || participants[0];
@@ -53,6 +54,7 @@ onMount(() => {
         selectedParticipantId = data.selectedParticipantId ?? 0;
         isRandomized = data.isRandomized || false;
         presentationOrder = data.presentationOrder || [];
+        groups = data.groups || [];
     }
 })
 
@@ -104,7 +106,12 @@ async function generateRandomOrder(params) {
 
         shuffleGroups.forEach( group => {
             const shuffledGroupMembers = shuffleArray([...group.members]);
-            finalOrder.push(...shuffledGroupMembers);
+            shuffledGroupMembers.forEach(member => {
+                finalOrder.push({
+                    ...member,
+                    theme: group.theme
+                });
+            });
         });
 
         presentationOrder = finalOrder;
@@ -137,15 +144,38 @@ function shuffleArray(array) {
     return shuffled;
 }
 
+function resetForNewEvent() {
+    participants = participants.map( p => ({ ...p, keywords: '' }) );
+    isRandomized = false;
+    presentationOrder = [];
+    selectedParticipantId = 0;
+    localStorage.removeItem('participantsData');
+}
+
 $: completedCount = participants.filter( p => p.keywords.trim() !== '').length;
 
-$: console.log(presentationOrder)
+$:console.log('Groups:', groups)
+$:console.log('Presentation Order:', presentationOrder)
 
 </script>
 
 <div class="container"></div>
     <h1>Presentation randomizer</h1>
+    
+    {#if isRandomized && presentationOrder.length > 0}
+        <div class="view-toggle">
+            <button on:click={() => isRandomized = false}>Edit Information</button>
+            <button on:click={() => isRandomized = true} class="active">View Results</button>
+        </div>
+    {/if}
 
+{#if !isRandomized}
+    {#if presentationOrder.length > 0}
+        <div class="view-toggle">
+            <button on:click={() => isRandomized = false} class="active">Edit Information</button>
+            <button on:click={() => isRandomized = true}>View Results</button>
+        </div>
+    {/if}
     <div class="input-section">
         <h2>Enter information</h2>    
         <p>All 15 participants must fill out their information before generating the order</p>
@@ -177,21 +207,31 @@ $: console.log(presentationOrder)
                 on:click={generateRandomOrder}
                 disabled={!allFieldsFilled || isGenerating}
                 class:disabled={!allFieldsFilled || isGenerating}
-            >Generate Order</button>
+            >
             {#if isGenerating}
                 <p>Generating...</p>
+            {:else if !allFieldsFilled}
+                Waiting for all participants ({participants.filter(p => p.name.trim() && p.keywords.trim()).length}/15)
+            {:else}
+                Generate Presentation Order
             {/if}
+            </button>
         </div>
-
+    </div>
+{:else}
         <div class='results'>
             <h2>Presentation Order</h2>
+            <div class="results-actions">
+                <button on:click={resetForNewEvent} class="reset-button">
+                    Reset for New Event
+                </button>
+            </div>
             <div class="presentation-order">
                 {#each presentationOrder as participant, index}
-                    <div class="order-item">
+                    <div class="participant-item">
                         <div class="position">#{index + 1}</div>
                         <div class="participant-info">
                             <div class="participant-name">{participant.name}</div>
-                            <div class="participant-keywords">{participant.keywords}</div>
                         </div>
                     </div>
                 {/each}
@@ -200,5 +240,4 @@ $: console.log(presentationOrder)
                 {/if}
             </div>
         </div>
-
-    </div>
+{/if}

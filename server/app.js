@@ -2,9 +2,25 @@ const express = require('express');
 const OpenAI = require('openai');
 const cors = require('cors');
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+const DATA_FILE = path.join(__dirname, 'data.json');
+
+const defaultData = {
+    participants: Array(15).fill(null).map((_, i) => ({
+        id: i,
+        name: `Participant ${i + 1}`,
+        keywords: ''
+    })),
+    seletedParticipantIds: 0,
+    isRandomized: false,
+    presentationOrder: [],
+    lastUpdated: Date.now()
+};
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -18,11 +34,74 @@ app.use(cors({
 
 app.use(express.json({ limit: '1mb' }));
 
+async function loadData() {
+    try {
+        const data = await fs.readFile(DATA_FILE, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error('Error loading data:', error);
+        await writeData(defaultData);
+        return defaultData;
+    }
+}
+
+async function writeData(data) {
+    try {
+        await fs.promises.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
+        console.log('Data saved successfully');
+    } catch (error) {
+        console.error('Error saving data:', error);
+    }
+}
+
 app.get('/', (req, res) => {
     res.json({ message: 'API is running',
         version: '1.0.0',
         status: 'healthy' 
     });
+});
+
+app.get('/api/data', async (req, res) => {
+    try {
+        const data = await loadData();
+        res.json(data);
+    } catch (error) {
+        console.error('Error in /api/data:', error);
+        res.status(500).json({ error: 'Failed to load data' });
+    }
+});
+
+app.post('/api/data', async (req, res) => {
+    try {
+        const { participants, selectedParticipantId, isRandomized, presentationOrder} = req.body;
+        const currentData = await loadData();
+
+        const newData = {
+            ...currentData,
+            participants: participants || currentData.participants,
+            selectedParticipantId: selectedParticipantId ?? currentData.selectedParticipantId,
+            isRandomized: isRandomized ?? currentData.isRandomized,
+            presentationOrder: presentationOrder || currentData.presentationOrder,
+            lastUpdated: Date.now()
+        }
+
+        await writeData(newData);
+        res.json(newData);
+    } catch (error) {
+        console.error('Error in /api/data:', error);
+        res.status(500).json({ error: 'Failed to update data' });
+    }
+});
+
+app.delete('/api/data', async (req, res) => {
+    try {
+        const freshData = { ...defaultData, lastUpdated: Date.now() };
+        await writeData(freshData);
+        res.json(freshData);
+    } catch (error) {
+        console.error('Error in DELETE /api/data:', error);
+        res.status(500).json({ error: 'Failed to reset data' });
+    }
 });
 
 app.post('/api/group-topics', async (req, res) => {
@@ -162,18 +241,5 @@ app.listen(port, () => {
   console.log(`Thesis randomizer API listening on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
-
-app.get('/env-debug', (req, res) => {
-  res.json({
-    nodeEnv: process.env.NODE_ENV,
-    hasOpenAIKey: !!process.env.OPENAI_API_KEY,
-    keyLength: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0,
-    keyFirst10: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) : 'none',
-    allEnvKeys: Object.keys(process.env).sort(),
-    vercelEnv: process.env.VERCEL_ENV,
-    vercelUrl: process.env.VERCEL_URL
-  });
-});
-
     
 module.exports = app;
