@@ -163,5 +163,17 @@ app.listen(port, () => {
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
+app.get('/env-debug', (req, res) => {
+  res.json({
+    nodeEnv: process.env.NODE_ENV,
+    hasOpenAIKey: !!process.env.OPENAI_API_KEY,
+    keyLength: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0,
+    keyFirst10: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) : 'none',
+    allEnvKeys: Object.keys(process.env).sort(),
+    vercelEnv: process.env.VERCEL_ENV,
+    vercelUrl: process.env.VERCEL_URL
+  });
+});
+
     
 module.exports = app;
