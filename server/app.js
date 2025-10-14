@@ -1,129 +1,85 @@
 const express = require('express');
-const OpenAI = require('openai');
-const cors = require('cors');
-require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
-
 const app = express();
-const port = process.env.PORT || 3000;
+const OpenAI = require('openai');
 
-const DATA_FILE = path.join(__dirname, 'data.json');
+app.use((req, res, next) => {
+  console.log(`=== REQUEST: ${req.method} ${req.url} ===`);
+  next();
+});
 
-const defaultData = {
-    participants: [
-        { name: 'Arnar', id: 0, keywords: '' },
-        { name: 'Cassandra', id: 1, keywords: '' },
-        { name: 'Costanza', id: 2, keywords: '' },
-        { name: 'Diana', id: 3, keywords: '' },
-        { name: 'Haotong', id: 4, keywords: '' },
-        { name: 'Kosara', id: 5, keywords: '' },
-        { name: 'Li', id: 6, keywords: '' },
-        { name: 'Luca M', id: 7, keywords: '' },
-        { name: 'Luca W', id: 8, keywords: '' },
-        { name: 'Lucas G', id: 9, keywords: '' },
-        { name: 'Martina', id: 10, keywords: '' },
-        { name: 'Matteo', id: 11, keywords: '' },
-        { name: 'Samuel', id: 12, keywords: '' },
-        { name: 'Sergio', id: 13, keywords: '' },
-        { name: 'Zhiyi', id: 14, keywords: '' }
-    ],
-    selectedParticipantId: 0,
-    isRandomized: false,
-    presentationOrder: [],
-    groups: [],
-    lastUpdated: Date.now()
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') {
+    console.log('OPTIONS request handled');
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
+
+app.use(express.json());
+
+let storedData = {
+  participants: [
+    { name: 'Arnar', id: 0, keywords: '' },
+    { name: 'Cassandra', id: 1, keywords: '' },
+    { name: 'Costanza', id: 2, keywords: '' },
+    { name: 'Diana', id: 3, keywords: '' },
+    { name: 'Haotong', id: 4, keywords: '' },
+    { name: 'Kosara', id: 5, keywords: '' },
+    { name: 'Li', id: 6, keywords: '' },
+    { name: 'Luca M', id: 7, keywords: '' },
+    { name: 'Luca W', id: 8, keywords: '' },
+    { name: 'Lucas G', id: 9, keywords: '' },
+    { name: 'Martina', id: 10, keywords: '' },
+    { name: 'Matteo', id: 11, keywords: '' },
+    { name: 'Samuel', id: 12, keywords: '' },
+    { name: 'Sergio', id: 13, keywords: '' },
+    { name: 'Zhiyi', id: 14, keywords: '' }
+  ],
+  selectedParticipantId: 0,
+  isRandomized: false,
+  presentationOrder: [],
+  lastUpdated: Date.now()
 };
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    });
-
-app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'https://dianayukari.github.io/randominfo'
-  ]
-}))
-
-app.use(express.json({ limit: '10mb' }));
-
-async function loadData() {
-    try {
-        const data = await fs.promises.readFile(DATA_FILE, 'utf-8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.error('Error loading data:', error);
-        await writeData(defaultData);
-        return defaultData;
-    }
-}
-
-async function writeData(data) {
-    try {
-        await fs.promises.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
-        console.log('Data saved successfully');
-    } catch (error) {
-        console.error('Error saving data:', error);
-    }
-}
-
+// Routes - in the exact working order
 app.get('/', (req, res) => {
-    res.json({ message: 'API is running',
-        version: '1.0.0',
-        status: 'healthy' 
-    });
+  console.log('GET / hit');
+  res.json({ message: 'API working' });
 });
 
-app.get('/api/data', async (req, res) => {
-    try {
-        const data = await loadData();
-        res.json(data);
-    } catch (error) {
-        console.error('Error in /api/data:', error);
-        res.status(500).json({ error: 'Failed to load data' });
-    }
+app.get('/api/data', (req, res) => {
+  console.log('GET /api/data hit');
+  res.json(storedData);
 });
 
-app.post('/api/data', async (req, res) => {
-    try {
-        console.log('📝 Received POST to /api/data');
-        console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
-        
-        const { participants, selectedParticipantId, isRandomized, presentationOrder, groups} = req.body;
-        const currentData = await loadData();
-
-        const newData = {
-            ...currentData,
-            participants: participants || currentData.participants,
-            selectedParticipantId: selectedParticipantId ?? currentData.selectedParticipantId,
-            isRandomized: isRandomized ?? currentData.isRandomized,
-            presentationOrder: presentationOrder || currentData.presentationOrder,
-            groups: groups || currentData.groups || [],
-            lastUpdated: Date.now()
-        }
-
-        console.log('📝 Saving new data:', JSON.stringify(newData, null, 2));
-        await writeData(newData);
-        console.log('📝 Data saved successfully');
-        res.json(newData);
-    } catch (error) {
-        console.error('Error in /api/data:', error);
-        res.status(500).json({ error: 'Failed to update data' });
-    }
+app.post('/api/data', (req, res) => {
+  console.log('POST /api/data hit - SUCCESS!');
+  console.log('Body received:', req.body);
+  
+  try {
+    storedData = { ...req.body, lastUpdated: Date.now() };
+    console.log('Data updated successfully');
+    res.json({ success: true, lastUpdated: storedData.lastUpdated });
+  } catch (error) {
+    console.error('POST error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
-app.delete('/api/data', async (req, res) => {
-    try {
-        const freshData = { ...defaultData, lastUpdated: Date.now() };
-        await writeData(freshData);
-        res.json(freshData);
-    } catch (error) {
-        console.error('Error in DELETE /api/data:', error);
-        res.status(500).json({ error: 'Failed to reset data' });
-    }
-});
+let openai;
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  console.log('OpenAI initialized');
+} else {
+  console.log('No OpenAI API key found');
+}
 
 app.post('/api/group-topics', async (req, res) => {
     try {
@@ -243,24 +199,10 @@ app.post('/api/group-topics', async (req, res) => {
     }
 });
 
-app.use((error, req, res, next) => {
-  console.error('Unhandled error:', error);
-  res.status(500).json({
-    error: 'Internal server error',
-    message: 'Something went wrong'
-  });
+// Catch-all route MUST be last
+app.use('*', (req, res) => {
+  console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ error: 'Route not found' });
 });
 
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'Not found',
-    message: 'The requested endpoint does not exist'
-  });
-});
-
-app.listen(port, () => {
-  console.log(`Thesis randomizer API listening on port ${port}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
-    
 module.exports = app;

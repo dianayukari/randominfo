@@ -271,13 +271,7 @@ $: groupedParticipants = presentationOrder.reduce((acc, participant, index) => {
             </div>
         </div>
 
-        <button
-            on:click={() => {
-                saveData();
-            }}
-        >
-            Save
-        </button>
+        <button on:click={() => {saveData();}}>Save</button>
 
         <div class="action-section">
             <button 
@@ -295,5 +289,10 @@ $: groupedParticipants = presentationOrder.reduce((acc, participant, index) => {
             {/if}
             </button>
         </div>
+
+        <button on:click={clearAllData} class="clear-button">
+                Clear All Data
+        </button>
+        
     </div>
 {/if}
