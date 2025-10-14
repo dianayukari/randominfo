@@ -37,18 +37,13 @@ const defaultData = {
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-    });s
+    });
 
 app.use(cors({
     origin: process.env.NODE_ENV === 'production'
         ? 'https://dianayukari.github.io/randominfo'
         : ['http://localhost:5173', 'http://localhost:4173', 'http://127.0.0.1:5173'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    credentials: true,
-    optionsSuccessStatus: 200
 }));
-
 
 app.use(express.json({ limit: '1mb' }));
 
