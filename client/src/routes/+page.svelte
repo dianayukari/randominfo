@@ -1,7 +1,6 @@
 <script>
 import { onMount } from 'svelte';
 import { browser, dev } from '$app/environment';
-	import { local } from 'd3';
 
 let participants = [
     { name: 'Arnar', id: 0, keywords: '' },
@@ -29,8 +28,8 @@ let selectedParticipantId = 0;
 let errorMessage = '';
 
 const API_BASE_URL = dev 
-    ? 'http://localhost:5173' 
-    : 'https://dianayukarim.github.io/randominfo';
+    ? 'http://localhost:3000' 
+    : 'https://randominfo.vercel.app';
 
 $: allFieldsFilled = participants.every( p => p.keywords.trim() !== '' );
 
@@ -71,14 +70,14 @@ async function generateRandomOrder(params) {
     isGenerating = true;
 
     try {
-        console.log(`Calling API at ${API_BASE_URL}/server`);
+        console.log(`Calling API at ${API_BASE_URL}`);
 
         const validParticipants = participants
             .filter( p => p.keywords.trim() !== '' )
             .map( p => ({ name: p.name, keywords: p.keywords.trim()
         }));
 
-        const response = await fetch(`${API_BASE_URL}/server`, {
+        const response = await fetch(`${API_BASE_URL}/api/group-topics`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json',
                         'Accept': 'application/json'
@@ -179,6 +178,24 @@ $: completedCount = participants.filter( p => p.keywords.trim() !== '').length;
             {#if isGenerating}
                 <p>Generating...</p>
             {/if}
+        </div>
+
+        <div class='results'>
+            <h2>Presentation Order</h2>
+            <div class="presentation-order">
+                {#each presentationOrder as participant, index}
+                    <div class="order-item">
+                        <div class="position">#{index + 1}</div>
+                        <div class="participant-info">
+                            <div class="participant-name">{participant.name}</div>
+                            <div class="participant-keywords">{participant.keywords}</div>
+                        </div>
+                    </div>
+                {/each}
+                {#if presentationOrder.length === 0}
+                    <p>No order generated yet.</p>
+                {/if}
+            </div>
         </div>
 
     </div>

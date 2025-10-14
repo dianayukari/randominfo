@@ -60,7 +60,7 @@ app.post('/api/group-topics', async (req, res) => {
 
     ${validParticipants.map((p, i) => `${i + 1}. ${p.name}: ${p.keywords}`).join('\n')}
 
-    Please group these participants by similar thesis topics/themes. Create 4 groups where participants with related research areas are together. Each group should have at least 3 members.
+    Please group these participants by similar thesis topics/themes. Create 4 groups where participants with related research areas are together. 3 groups should have 4 participants, 1 group should have 3 participants.
     Return your response as a JSON object with this exact structure:
     {
     "groups": [
@@ -82,7 +82,7 @@ app.post('/api/group-topics', async (req, res) => {
     - Return valid JSON only, no additional text`;
 
     const completion = await openai.chat.completions.create({
-        model: 'gpt-4.0-mini',
+        model: 'gpt-4o-mini',
         messages: [
             {
                 role: 'system',
