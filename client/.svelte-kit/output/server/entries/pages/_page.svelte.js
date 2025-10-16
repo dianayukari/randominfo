@@ -44,9 +44,9 @@ function _page($$renderer, $$props) {
       $$renderer2.push(`<div class="input-section"><h2>Enter information</h2> <p>All 15 participants must fill out their information before generating the order</p> <div class="participant-list"><div class="select-container">`);
       $$renderer2.select({ class: "name-input", value: selectedParticipantId }, ($$renderer3) => {
         $$renderer3.push(`<!--[-->`);
-        const each_array_2 = ensure_array_like(participants);
-        for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
-          let p = each_array_2[$$index_2];
+        const each_array_3 = ensure_array_like(participants);
+        for (let $$index_3 = 0, $$length = each_array_3.length; $$index_3 < $$length; $$index_3++) {
+          let p = each_array_3[$$index_3];
           $$renderer3.option({ value: p.id }, ($$renderer4) => {
             $$renderer4.push(`${escape_html(p.name)}`);
           });
@@ -70,7 +70,7 @@ function _page($$renderer, $$props) {
         }
         $$renderer2.push(`<!--]-->`);
       }
-      $$renderer2.push(`<!--]--></button></div></div>`);
+      $$renderer2.push(`<!--]--></button></div> <button class="clear-button">Clear All Data</button></div>`);
     }
     $$renderer2.push(`<!--]-->`);
   });

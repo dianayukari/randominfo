@@ -8,12 +8,21 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  console.log('Request from origin:', origin);
+  
+  if (!origin || 
+      origin.includes('localhost') || 
+      origin.includes('127.0.0.1') ||
+      origin.includes('github.io')) {
+    res.header('Access-Control-Allow-Origin', origin || '*');
+  }
+  
   res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   
   if (req.method === 'OPTIONS') {
-    console.log('OPTIONS request handled');
+    console.log('OPTIONS handled for:', origin);
     return res.sendStatus(200);
   }
   
@@ -197,6 +206,43 @@ app.post('/api/group-topics', async (req, res) => {
             message: 'Internal server error'
         });
     }
+});
+
+app.delete('/api/data', (req, res) => {
+  try {
+    console.log('DELETE /api/data called - clearing all data');
+    
+    // Reset to default data with your student names
+    storedData = {
+      participants: [
+        { name: 'Arnar', id: 0, keywords: '' },
+        { name: 'Cassandra', id: 1, keywords: '' },
+        { name: 'Costanza', id: 2, keywords: '' },
+        { name: 'Diana', id: 3, keywords: '' },
+        { name: 'Haotong', id: 4, keywords: '' },
+        { name: 'Kosara', id: 5, keywords: '' },
+        { name: 'Li', id: 6, keywords: '' },
+        { name: 'Luca M', id: 7, keywords: '' },
+        { name: 'Luca W', id: 8, keywords: '' },
+        { name: 'Lucas G', id: 9, keywords: '' },
+        { name: 'Martina', id: 10, keywords: '' },
+        { name: 'Matteo', id: 11, keywords: '' },
+        { name: 'Samuel', id: 12, keywords: '' },
+        { name: 'Sergio', id: 13, keywords: '' },
+        { name: 'Zhiyi', id: 14, keywords: '' }
+      ],
+      selectedParticipantId: 0,
+      isRandomized: false,
+      presentationOrder: [],
+      lastUpdated: Date.now()
+    };
+    
+    console.log('All data cleared successfully');
+    res.json({ success: true, message: 'All data cleared' });
+  } catch (error) {
+    console.error('DELETE error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Catch-all route MUST be last
