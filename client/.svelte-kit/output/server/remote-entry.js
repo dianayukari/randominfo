@@ -4,7 +4,8 @@ import { error, json } from "@sveltejs/kit";
 import { a as stringify_remote_arg, s as stringify, c as create_remote_cache_key } from "./chunks/shared.js";
 import "clsx";
 import { j as run } from "./chunks/utils2.js";
-import { b as base, c as app_dir, B as BROWSER, p as prerendering } from "./chunks/environment.js";
+import { B as BROWSER, p as prerendering } from "./chunks/environment.js";
+import { b as base, c as app_dir } from "./chunks/server.js";
 function create_validator(validate_or_fn, maybe_fn) {
   if (!maybe_fn) {
     return (arg) => {

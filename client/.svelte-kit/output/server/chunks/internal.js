@@ -4,6 +4,7 @@ import { r as run_all, d as define_property, a as deferred, n as noop, o as obje
 import { s as safe_equals, e as equals } from "./equality.js";
 import "clsx";
 import { s as setContext } from "./context.js";
+import "./server.js";
 let public_env = {};
 function set_private_env(environment) {
 }
@@ -2505,7 +2506,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "tg8o2e"
+  version_hash: "15y06f2"
 };
 async function get_hooks() {
   let handle;

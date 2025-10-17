@@ -7,10 +7,10 @@ function __memo(fn) {
 return {
 	appDir: "app",
 	appPath: "randominfo/app",
-	assets: new Set(["robots.txt"]),
-	mimeTypes: {".txt":"text/plain"},
+	assets: new Set(["rabbit1.png","rabbit2.png","robots.txt"]),
+	mimeTypes: {".png":"image/png",".txt":"text/plain"},
 	_: {
-		client: {start:"app/immutable/entry/start.GzNmsooi.js",app:"app/immutable/entry/app.CTMWo26F.js",imports:["app/immutable/entry/start.GzNmsooi.js","app/immutable/chunks/D0IoRmqh.js","app/immutable/chunks/CZWMsW5p.js","app/immutable/chunks/B089eHam.js","app/immutable/entry/app.CTMWo26F.js","app/immutable/chunks/B089eHam.js","app/immutable/chunks/CZWMsW5p.js","app/immutable/chunks/DsnmJJEf.js","app/immutable/chunks/RsWywM0O.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
+		client: {start:"app/immutable/entry/start.DYCfX4lE.js",app:"app/immutable/entry/app.CkYLQIGP.js",imports:["app/immutable/entry/start.DYCfX4lE.js","app/immutable/chunks/jZ1gG0LB.js","app/immutable/chunks/FhcG3dpi.js","app/immutable/chunks/BGMrN2PN.js","app/immutable/chunks/CQHu2C7m.js","app/immutable/entry/app.CkYLQIGP.js","app/immutable/chunks/BGMrN2PN.js","app/immutable/chunks/FhcG3dpi.js","app/immutable/chunks/DsnmJJEf.js","app/immutable/chunks/CMUbuGCI.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
 		nodes: [
 			__memo(() => import('./nodes/0.js')),
 			__memo(() => import('./nodes/1.js'))

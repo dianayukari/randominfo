@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { browser, dev } from '$app/environment';
+    import { base } from '$app/paths';
 
 	let participants = [
 		{ name: 'Arnar', id: 0, keywords: '' },
@@ -246,7 +247,7 @@
 		<!-- Show results screen when presentation order has been generated -->
 
         <div class="rabbit">
-            <img src="/rabbit2.png" alt="Rabbit illustration" width="120" />
+            <img src='{base}/rabbit2.png' alt="Rabbit illustration" width="120" />
         </div>
 
 		<div class="results">
@@ -337,7 +338,7 @@
 					</select>
 				</div>
 				<div class="rabbit1">
-					<img src="/rabbit1.png" alt="Rabbit illustration" width="120" />
+					<img src='{base}/rabbit1.png' alt="Rabbit illustration" width="120" />
 				</div>
 			</div>
 			<div class="keywords-container">
@@ -401,8 +402,8 @@
 	}
 
 	.main {
-		margin-top: 30px;
 		max-width: 320px;
+        margin: 30px auto;
 	}
 
     .rabbit {

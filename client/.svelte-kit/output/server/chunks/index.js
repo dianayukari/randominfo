@@ -774,6 +774,9 @@ function attributes(attrs, css_hash, classes, styles, flags = 0) {
   }
   return attr_str;
 }
+function stringify(value) {
+  return typeof value === "string" ? value : value == null ? "" : value + "";
+}
 function attr_class(value, hash, directives) {
   var result = to_class(value, hash, directives);
   return result ? ` class="${escape_html(result, true)}"` : "";
@@ -791,6 +794,7 @@ export {
   DIRTY as D,
   ERROR_VALUE as E,
   attr_class as F,
+  stringify as G,
   HYDRATION_ERROR as H,
   INERT as I,
   LEGACY_PROPS as L,
