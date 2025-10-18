@@ -24,19 +24,18 @@
 	let isGenerating = false;
 	let allFieldsFilled = false;
 	let presentationOrder = [];
-	let simpleOrder = []; // Store the simple shuffled order
+	let simpleOrder = [];
 	let groups = [];
 	let isRandomized = false;
 	let selectedParticipantId = 0;
 	let errorMessage = '';
 	let isLoading = true;
 	let isSaving = false;
-	let showGroupedView = true; // Toggle for grouped vs simple view
 	let isSaved = false;
 
 	const API_BASE_URL = dev ? 'https://randominfo.vercel.app' : 'https://randominfo.vercel.app';
 
-	$: allFieldsFilled = participants.every((p) => p.keywords.trim() !== '');
+	$: allFieldsFilled = participants.every((p) => p.keywords.trim() !== '' && isSaved == true);
 
 	$: selectedParticipant =
 		participants.find((p) => p.id === selectedParticipantId) || participants[0];
@@ -230,8 +229,6 @@
 		}
 	}
 
-	$: completedCount = participants.filter((p) => p.keywords.trim() !== '').length;
-
 	$: groupedParticipants = presentationOrder.reduce((acc, participant, index) => {
 		const theme = participant.theme;
 		if (!acc[theme]) {
@@ -373,7 +370,7 @@
 				class:disabled={!allFieldsFilled || isGenerating}
 			>
 				{#if isGenerating}
-					<p>Generating...</p>
+					Generating...
 				{:else if !allFieldsFilled}
 					Waiting for everyone ({participants.filter((p) => p.name.trim() && p.keywords.trim())
 						.length}/15)
@@ -594,9 +591,8 @@
 		opacity: 0.7;
 	}
 
-	/* Ripple effect */
 	.generate-button:not(:disabled)::before {
-		content: '';
+		/* content: ''; */
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -610,15 +606,8 @@
 			height 0.3s;
 	}
 
-	.generate-button:not(:disabled):active::before {
-		width: 300px;
-		height: 300px;
-	}
-
 	button {
 		font-family: 'hoss-round', sans-serif;
-		border: none;
-		border-radius: 5px;
 	}
 
 
