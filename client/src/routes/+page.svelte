@@ -32,10 +32,11 @@
 	let isLoading = true;
 	let isSaving = false;
 	let isSaved = false;
+	let grouped = false
 
 	const API_BASE_URL = dev ? 'https://randominfo.vercel.app' : 'https://randominfo.vercel.app';
 
-	$: allFieldsFilled = participants.every((p) => p.keywords.trim() !== '' && isSaved == true);
+	$: allFieldsFilled = participants.every((p) => p.keywords.trim() !== '');
 
 	$: selectedParticipant =
 		participants.find((p) => p.id === selectedParticipantId) || participants[0];
@@ -44,16 +45,30 @@
 		isSaved = false;
 	}
 
+	$: groupedParticipants = presentationOrder.reduce((acc, participant, index) => {
+		const theme = participant.theme;
+		if (!acc[theme]) {
+			acc[theme] = [];
+		}
+		acc[theme].push({
+			...participant,
+			position: index + 1
+		});
+		return acc;
+	}, {});
+
 	onMount(async () => {
 		console.log('App mounting - initial state:', { 
 			participantCount: participants.length, 
 			isRandomized, 
+			grouped,
 			presentationOrderLength: presentationOrder.length 
 		});
 		await loadData();
 		console.log('After loadData - final state:', { 
 			participantCount: participants.length, 
 			isRandomized, 
+			grouped,
 			presentationOrderLength: presentationOrder.length 
 		});
 		isLoading = false;
@@ -66,10 +81,12 @@
 				const data = await response.json();
 				participants = data.participants || participants;
 				selectedParticipantId = data.selectedParticipantId ?? 0;
+				// Restore generated data if it exists
 				isRandomized = data.isRandomized || false;
 				presentationOrder = data.presentationOrder || [];
 				simpleOrder = data.simpleOrder || [];
 				groups = data.groups || [];
+				grouped = data.grouped || false;
 				console.log('Data loaded successfully from server');
 			} else {
 				console.warn('Server responded with error:', response.status, response.statusText);
@@ -96,7 +113,8 @@
 					isRandomized,
 					presentationOrder,
 					simpleOrder,
-					groups
+					groups,
+					grouped
 				})
 			});
 
@@ -139,6 +157,7 @@
 				simpleOrder = [];
 				groups = [];
 				selectedParticipantId = 0;
+				grouped = false;
 			} else {
 				console.error('Failed to clear data');
 			}
@@ -163,7 +182,7 @@
 	}
 
 	async function generateRandomOrder() {
-		if (!allFieldsFilled || isRandomized) return;
+		if (!allFieldsFilled || isGenerating) return;
 
 		isGenerating = true;
 
@@ -226,21 +245,31 @@
 			}
 		} finally {
 			isGenerating = false;
+			grouped = true;
 		}
 	}
+	
+	async function generateOnlySimpleOrder() {
+		// Only generate if conditions are met
+		if (!allFieldsFilled || isGenerating) return;
 
-	$: groupedParticipants = presentationOrder.reduce((acc, participant, index) => {
-		const theme = participant.theme;
-		if (!acc[theme]) {
-			acc[theme] = [];
-		}
-		acc[theme].push({ ...participant, position: index + 1 });
-		return acc;
-	}, {});
+		isGenerating = true;
+
+		simpleOrder = shuffleArray(participants);
+		presentationOrder = simpleOrder
+
+		isRandomized = true;
+
+		await saveData()
+
+		isGenerating = false
+		grouped = false 
+	}
+
 </script>
 
 <div class="main">
-	{#if isRandomized && presentationOrder.length > 0}
+	{#if isRandomized && presentationOrder.length > 0 && grouped}
 		<!-- Show results screen when presentation order has been generated -->
 
         <div class="rabbit">
@@ -265,8 +294,25 @@
 					</div>
 				{/each}
 			</div>
-			<!-- Simple list view -->
 
+			{#if presentationOrder.length === 0}
+				<p>No order generated yet.</p>
+			{/if}
+		</div>
+		<div class="clear-section">
+            <p class="clear-sign">don't press it unless the term is over</p>
+			<button class="clear-button" on:click={clearAllData}> 
+                <span>DANGER!! <br> Clear all data </span></button>
+		</div>
+
+	{:else if isRandomized && !grouped}
+		<!-- Show results screen when presentation order has been generated -->
+		<div class="rabbit">
+			<img src='{base}/rabbit2.png' alt="Rabbit illustration" width="120" />
+		</div>
+
+		<div class="results">
+			<!-- Simple list view -->
 			<div class="simple-view">
                 <h2 class="title-order simple">Simple order</h2>
                 <div class="participant-list-simple">
@@ -291,37 +337,35 @@
                     {/each}
                     </div>
                     <div class="participant-list-item">
-                    {#each simpleOrder.slice(8, 12) as participant, index}
-                        <div class="participant-item">
-                            <div class="position">{index + 9}.</div>
-                            <div class="participant-info">
-                                <div class="participant-name">{[participant.name]}</div>
+                        {#each simpleOrder.slice(8, 12) as participant, index}
+                            <div class="participant-item">
+                                <div class="position">{index + 9}.</div>
+                                <div class="participant-info">
+                                    <div class="participant-name">{[participant.name]}</div>
+                                </div>
                             </div>
-                        </div>
-                    {/each}
+                        {/each}
                     </div>
                     <div class="participant-list-item">
-                    {#each simpleOrder.slice(12, 16) as participant, index}
-                        <div class="participant-item">
-                            <div class="position">{index + 13}.</div>
-                            <div class="participant-info">
-                                <div class="participant-name">{[participant.name]}</div>
+                        {#each simpleOrder.slice(12) as participant, index}
+                            <div class="participant-item">
+                                <div class="position">{index + 13}.</div>
+                                <div class="participant-info">
+                                    <div class="participant-name">{[participant.name]}</div>
+                                </div>
                             </div>
-                        </div>
-                    {/each}
-                    </div> 
+                        {/each}
+                    </div>
                 </div>
-			</div>
-
-			{#if presentationOrder.length === 0}
-				<p>No order generated yet.</p>
-			{/if}
+            </div>
 		</div>
+        
 		<div class="clear-section">
             <p class="clear-sign">don't press it unless the term is over</p>
 			<button class="clear-button" on:click={clearAllData}> 
                 <span>DANGER!! <br> Clear all data </span></button>
 		</div>
+
 	{:else}
 		<!-- Show input screen only when no results exist -->
 		<div class="input-section">
@@ -362,6 +406,11 @@
 				{:else}
 					Save
 				{/if}
+			</button>
+			<button
+				class="generate-button"
+				on:click={generateOnlySimpleOrder}
+			> Skip keywords
 			</button>
 			<button
 				class="generate-button"
@@ -411,6 +460,12 @@
 	.input-section {
 		display: flex;
 		gap: 30px;
+	}
+
+	.action-section {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
 	}
 
 	.results {
